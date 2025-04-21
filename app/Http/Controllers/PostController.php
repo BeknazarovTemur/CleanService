@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
@@ -28,12 +28,18 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
+        if($request->hasFile('image')){
+            $name = $request->file('image')->getClientOriginalName();
+            $path = $request->file('image')->storeAs('post-images', $name, 'public');
+        }
+
         $post = Post::create([
             'title' => $request->get('title'),
             'short_content' => $request->get('short_content'),
             'content' => $request->get('content'),
+            'image' => $path ?? null,
         ]);
         return redirect()->route('posts.index');
     }
