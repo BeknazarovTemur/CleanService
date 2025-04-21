@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -58,17 +59,33 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Post $post)
     {
-        //
+        return view('posts.edit')->with(['post' => $post]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StorePostRequest $request, Post $post)
     {
-        //
+        if($request->hasFile('image')){
+
+            if(isset($post->image)){
+                Storage::disk('public')->delete($post->image);
+            }
+
+            $name = $request->file('image')->getClientOriginalName();
+            $path = $request->file('image')->storeAs('post-images', $name, 'public');
+        }
+
+        $post->update([
+            'title' => $request->get('title'),
+            'short_content' => $request->get('short_content'),
+            'content' => $request->get('content'),
+            'image' => $path ?? $post->image,
+        ]);
+        return redirect()->route('posts.show', ['post' => $post->id]);
     }
 
     /**

@@ -12,6 +12,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8">
+                    <div class="text-right">
+                        <a href="{{ route('posts.edit', ['post'=>$post->id]) }}" class="btn btn-warning mr-2">Edit</a>
+
+                        <form action="/posts/1" method="POST" onsubmit="return confirm('Are you sure you want to delete this post?');" style="display:inline;">
+                            <input type="hidden" name="_token" value="CSRF_TOKEN_HERE">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
                     <div class="mb-5">
                         <div class="d-flex mb-2">
                             <a class="text-secondary text-uppercase font-weight-medium" href="">Admin</a>
